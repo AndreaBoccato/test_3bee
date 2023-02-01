@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_3bee/blocs/login/login_bloc.dart';
-import 'package:test_3bee/screens/user/login_page.dart';
+import 'package:test_3bee/screens/home_page.dart';
+import 'package:test_3bee/screens/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,11 +21,18 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          colorSchemeSeed: Colors.blue,
+          inputDecorationTheme: const InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            ),
+          ),
         ),
         initialRoute: '/login',
         routes: {
           '/login': (_) => const LoginPage(),
+          '/home': (_) => const HomePage(),
         },
       ),
     );

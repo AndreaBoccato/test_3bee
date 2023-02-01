@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:test_3bee/blocs/login/login_bloc.dart';
-import 'package:test_3bee/core/enums/form_status.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class LoginPage extends StatelessWidget {
       body: BlocListener<LoginBloc, LoginState>(
         listenWhen: (prev, curr) => prev.formStatus != curr.formStatus,
         listener: (context, state) {
-          if (state.formStatus == FormStatus.error) {
+          if (state.formStatus == FormzStatus.submissionFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Errore nel login'),
@@ -23,8 +23,8 @@ class LoginPage extends StatelessWidget {
             );
           }
 
-          if (state.formStatus == FormStatus.success) {
-            // TODO: go to home page
+          if (state.formStatus == FormzStatus.submissionSuccess) {
+            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
           }
         },
         child: SafeArea(
@@ -37,10 +37,12 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
+                      _IconLogo(),
+                      SizedBox(height: 20),
                       _EmailInput(),
-                      SizedBox(height: 12),
+                      SizedBox(height: 20),
                       _PasswordInput(),
-                      SizedBox(height: 12),
+                      SizedBox(height: 20),
                       _SubmitButton(),
                     ],
                   ),
@@ -50,6 +52,19 @@ class LoginPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _IconLogo extends StatelessWidget {
+  const _IconLogo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      Icons.emoji_nature_rounded,
+      color: Colors.orange,
+      size: 80,
     );
   }
 }
@@ -68,8 +83,11 @@ class _EmailInputState extends State<_EmailInput> {
       buildWhen: (prev, curr) => prev.email != curr.email,
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            label: Text('Email'),
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            label: const Text('Email'),
+            errorText: state.email.invalid ? state.email.getErrorMessage() : null,
           ),
           onChanged: (value) {
             context.read<LoginBloc>().add(EmailChanged(email: value));
@@ -94,10 +112,22 @@ class _PasswordInputState extends State<_PasswordInput> {
       buildWhen: (prev, curr) => prev.password != curr.password || prev.isPasswordVisible != curr.isPasswordVisible,
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            label: Text('Password'),
+          decoration: InputDecoration(
+            label: const Text('Password'),
+            errorText: state.password.invalid ? state.password.getErrorMessage() : null,
+            suffixIcon: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: IconButton(
+                icon: Icon(
+                  state.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  context.read<LoginBloc>().add(PasswordVisibilityChanged());
+                },
+              ),
+            ),
           ),
-          obscureText: state.isPasswordVisible,
+          obscureText: !state.isPasswordVisible,
           onChanged: (value) {
             context.read<LoginBloc>().add(PasswordChanged(password: value));
           },
@@ -118,27 +148,30 @@ class _SubmitButtonState extends State<_SubmitButton> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (prev, curr) => prev.isSubmitting != curr.isSubmitting,
+      buildWhen: (prev, curr) => prev.formStatus != curr.formStatus,
       builder: (context, state) {
-        return Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: state.isSubmitting
-                    ? null
-                    : () {
-                        context.read<LoginBloc>().add(FormSubmitted());
-                      },
-                child: state.isSubmitting
-                    ? const SizedBox(
-                        width: 25,
-                        height: 25,
-                        child: CircularProgressIndicator(),
-                      )
-                    : const Text('Login'),
+        return SizedBox(
+          width: MediaQuery.of(context).size.width * 0.6,
+          child: Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed: state.formStatus.isSubmissionInProgress
+                      ? null
+                      : () {
+                          context.read<LoginBloc>().add(FormSubmitted());
+                        },
+                  child: state.formStatus.isSubmissionInProgress
+                      ? const SizedBox(
+                          width: 25,
+                          height: 25,
+                          child: CircularProgressIndicator(),
+                        )
+                      : const Text('Login'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

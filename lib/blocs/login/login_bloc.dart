@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_3bee/core/enums/form_status.dart';
+import 'package:formz/formz.dart';
+import 'package:test_3bee/models/forms/email.dart';
+import 'package:test_3bee/models/forms/password.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -14,14 +16,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onEmailChanged(EmailChanged event, Emitter<LoginState> emit) {
+    final Email email = Email.dirty(event.email);
     emit(state.copyWith(
-      email: event.email,
+      email: email.valid ? Email.pure(event.email) : email,
+      formStatus: Formz.validate([email]),
     ));
   }
 
   void _onPasswordChanged(PasswordChanged event, Emitter<LoginState> emit) {
+    final Password password = Password.dirty(event.password);
     emit(state.copyWith(
-      password: event.password,
+      password: password.valid ? Password.pure(event.password) : password,
+      formStatus: Formz.validate([password]),
     ));
   }
 
@@ -32,16 +38,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onFormSubmitted(FormSubmitted event, Emitter<LoginState> emit) {
+    final Email email = Email.dirty(state.email.value);
+    final Password password = Password.dirty(state.password.value);
+
     emit(state.copyWith(
-      isSubmitting: true,
+      email: email,
+      password: password,
+      formStatus: Formz.validate([email, password]),
     ));
 
-    if (state.email.trim().isEmpty || state.password.trim().isEmpty) {
+    if (state.formStatus.isValidated) {
       emit(state.copyWith(
-        isSubmitting: false,
-        formStatus: FormStatus.error,
+        formStatus: FormzStatus.submissionInProgress,
       ));
-      return;
     }
   }
 }
