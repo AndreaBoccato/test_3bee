@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:test_3bee/blocs/login/login_bloc.dart';
 import 'package:test_3bee/screens/home_page.dart';
 import 'package:test_3bee/screens/login_page.dart';
+import 'package:test_3bee/services/common_service.dart';
 
 void main() {
+  GetIt.instance.registerSingleton<CommonService>(CommonService());
   runApp(const MyApp());
 }
 

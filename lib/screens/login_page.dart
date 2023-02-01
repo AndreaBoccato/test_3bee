@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:test_3bee/blocs/login/login_bloc.dart';
+import 'package:test_3bee/widgets/custom_snackbar.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,14 +17,11 @@ class LoginPage extends StatelessWidget {
         listenWhen: (prev, curr) => prev.formStatus != curr.formStatus,
         listener: (context, state) {
           if (state.formStatus == FormzStatus.submissionFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Errore nel login'),
-              ),
-            );
+            context.showErrorSnackBar(message: 'Errore nel login');
           }
 
           if (state.formStatus == FormzStatus.submissionSuccess) {
+            context.showSuccessSnackBar(message: 'Login effettuato con successo!');
             Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
           }
         },

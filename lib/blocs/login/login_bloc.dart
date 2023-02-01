@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:test_3bee/core/instance_locator.dart';
 import 'package:test_3bee/models/forms/email.dart';
 import 'package:test_3bee/models/forms/password.dart';
 
@@ -37,7 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     ));
   }
 
-  void _onFormSubmitted(FormSubmitted event, Emitter<LoginState> emit) {
+  Future _onFormSubmitted(FormSubmitted event, Emitter<LoginState> emit) async {
     final Email email = Email.dirty(state.email.value);
     final Password password = Password.dirty(state.password.value);
 
@@ -51,6 +54,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(state.copyWith(
         formStatus: FormzStatus.submissionInProgress,
       ));
+
+      try {
+        await commonService.authenticateUser(
+          email: state.email.value.trim(),
+          password: state.password.value.trim(),
+        );
+        emit(state.copyWith(
+          formStatus: FormzStatus.submissionSuccess,
+        ));
+      } catch (e) {
+        log('Error executing request: ${e.toString()}');
+        emit(state.copyWith(
+          formStatus: FormzStatus.submissionFailure,
+        ));
+      }
     }
   }
 }
