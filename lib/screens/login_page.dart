@@ -31,7 +31,7 @@ class LoginPage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
@@ -67,14 +67,9 @@ class _IconLogo extends StatelessWidget {
   }
 }
 
-class _EmailInput extends StatefulWidget {
+class _EmailInput extends StatelessWidget {
   const _EmailInput({Key? key}) : super(key: key);
 
-  @override
-  State<_EmailInput> createState() => _EmailInputState();
-}
-
-class _EmailInputState extends State<_EmailInput> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -96,14 +91,9 @@ class _EmailInputState extends State<_EmailInput> {
   }
 }
 
-class _PasswordInput extends StatefulWidget {
+class _PasswordInput extends StatelessWidget {
   const _PasswordInput({Key? key}) : super(key: key);
 
-  @override
-  State<_PasswordInput> createState() => _PasswordInputState();
-}
-
-class _PasswordInputState extends State<_PasswordInput> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -135,14 +125,9 @@ class _PasswordInputState extends State<_PasswordInput> {
   }
 }
 
-class _SubmitButton extends StatefulWidget {
+class _SubmitButton extends StatelessWidget {
   const _SubmitButton({Key? key}) : super(key: key);
 
-  @override
-  State<_SubmitButton> createState() => _SubmitButtonState();
-}
-
-class _SubmitButtonState extends State<_SubmitButton> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(

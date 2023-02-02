@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:test_3bee/core/instance_locator.dart';
+import 'package:test_3bee/models/responses/apiaries_response.dart';
 
 ///
 /// Essendoci solamente due chiamate api, per comodità racchiudo
@@ -14,7 +18,7 @@ class CommonService {
     dio = Dio(options);
   }
 
-  Future authenticateUser({required String email, required String password}) async {
+  Future<Map<String, dynamic>> authenticateUser({required String email, required String password}) async {
     final response = await dio.post(
       '/auth/jwt/create',
       data: {
@@ -23,8 +27,23 @@ class CommonService {
       },
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Error response from server');
-    }
+    log('JWT create response: ${response.data}');
+
+    return response.data;
+  }
+
+  Future getApiaries({required int page}) async {
+    final String accessToken = localCache.getAccessToken()!;
+    final response = await dio.get(
+      '/apiaries',
+      options: Options(headers: {
+        'Authorization': 'Bearer $accessToken',
+      }),
+      queryParameters: {
+        'page': page,
+      },
+    );
+
+    final ApiariesResponse res = ApiariesResponse.fromJson(response.data);
   }
 }

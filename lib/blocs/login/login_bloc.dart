@@ -56,10 +56,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       ));
 
       try {
-        await commonService.authenticateUser(
+        final Map<String, dynamic> response = await commonService.authenticateUser(
           email: state.email.value.trim(),
           password: state.password.value.trim(),
         );
+
+        await localCache.setAccessToken(response['access']);
+        await localCache.setRefreshToken(response['refresh']);
+
         emit(state.copyWith(
           formStatus: FormzStatus.submissionSuccess,
         ));

@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_3bee/blocs/home/home_bloc.dart';
 import 'package:test_3bee/blocs/login/login_bloc.dart';
+import 'package:test_3bee/core/local_cache.dart';
 import 'package:test_3bee/screens/home_page.dart';
 import 'package:test_3bee/screens/login_page.dart';
+import 'package:test_3bee/screens/main_page.dart';
 import 'package:test_3bee/services/common_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  final SharedPreferences preferences = await SharedPreferences.getInstance();
+  final LocalCache localCache = LocalCache(preferences: preferences);
+
   GetIt.instance.registerSingleton<CommonService>(CommonService());
+  GetIt.instance.registerSingleton<LocalCache>(localCache);
   runApp(const MyApp());
 }
 
@@ -20,6 +35,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(create: (_) => LoginBloc()),
+        BlocProvider<HomeBloc>(create: (_) => HomeBloc()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -32,8 +48,9 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initialRoute: '/login',
+        initialRoute: '/',
         routes: {
+          '/': (_) => const MainPage(),
           '/login': (_) => const LoginPage(),
           '/home': (_) => const HomePage(),
         },
