@@ -8,13 +8,13 @@ class ApiariesResponse {
   final int count;
   final String? next;
   final String? previous;
-  final List<Apiary> response;
+  final List<Apiary> results;
 
   const ApiariesResponse({
     required this.count,
     this.next,
     this.previous,
-    this.response = const [],
+    this.results = const [],
   });
 
   factory ApiariesResponse.fromJson(Map<String, dynamic> json) => _$ApiariesResponseFromJson(json);

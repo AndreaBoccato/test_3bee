@@ -7,19 +7,13 @@ class Apiary {
   final int id;
   final String name;
   final String color;
-  final String latitude;
-  final String longitude;
-  final String route;
   @JsonKey(name: 'thumbnail_apiary_list_url')
-  final String imageUrl;
+  final String? imageUrl;
 
   const Apiary({
     required this.id,
     required this.name,
     required this.color,
-    required this.latitude,
-    required this.longitude,
-    required this.route,
     required this.imageUrl,
   });
 

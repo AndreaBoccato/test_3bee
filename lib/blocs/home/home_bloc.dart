@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_3bee/core/instance_locator.dart';
+import 'package:test_3bee/models/responses/apiaries_response.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -20,7 +21,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ));
 
     try {
-      await commonService.getApiaries(page: event.page);
+      final ApiariesResponse apiariesResponse = await commonService.getApiaries(page: event.page);
+
+      emit(state.copyWith(
+        apiariesResponse: apiariesResponse,
+      ));
     } catch (e) {
       log('Error from server: ${e.toString()}');
     } finally {

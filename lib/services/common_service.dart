@@ -32,7 +32,7 @@ class CommonService {
     return response.data;
   }
 
-  Future getApiaries({required int page}) async {
+  Future<ApiariesResponse> getApiaries({required int page}) async {
     final String accessToken = localCache.getAccessToken()!;
     final response = await dio.get(
       '/apiaries',
@@ -44,6 +44,9 @@ class CommonService {
       },
     );
 
-    final ApiariesResponse res = ApiariesResponse.fromJson(response.data);
+    log('Get apiaries response: ${response.data['results']}');
+
+    final ApiariesResponse apiariesResponse = ApiariesResponse.fromJson(response.data);
+    return apiariesResponse;
   }
 }

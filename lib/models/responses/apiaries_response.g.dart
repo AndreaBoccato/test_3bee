@@ -11,7 +11,7 @@ ApiariesResponse _$ApiariesResponseFromJson(Map<String, dynamic> json) =>
       count: json['count'] as int,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
-      response: (json['response'] as List<dynamic>?)
+      results: (json['results'] as List<dynamic>?)
               ?.map((e) => Apiary.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -22,5 +22,5 @@ Map<String, dynamic> _$ApiariesResponseToJson(ApiariesResponse instance) =>
       'count': instance.count,
       'next': instance.next,
       'previous': instance.previous,
-      'response': instance.response,
+      'results': instance.results,
     };
