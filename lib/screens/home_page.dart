@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:test_3bee/blocs/home/home_bloc.dart';
 import 'package:test_3bee/models/apiary.dart';
 
@@ -94,7 +97,7 @@ class _ApiaryItem extends StatelessWidget {
   }
 }
 
-class _Foreground extends StatelessWidget {
+class _Foreground extends StatefulWidget {
   final Apiary apiary;
 
   const _Foreground({
@@ -103,14 +106,29 @@ class _Foreground extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<_Foreground> createState() => _ForegroundState();
+}
+
+class _ForegroundState extends State<_Foreground> {
+  late int timestamp;
+  late String weight;
+
+  @override
+  void initState() {
+    super.initState();
+    timestamp = widget.apiary.getLatestTimestamp();
+    weight = widget.apiary.getWeightOfTimestamp(timestamp);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _ForegroundTitle(title: apiary.name),
-        const _ForegroundWeightInfo(),
+        _ForegroundTitle(title: widget.apiary.name),
+        _ForegroundWeightInfo(weight: weight),
         const Spacer(),
-        const _ForegroundFooter(),
+        _ForegroundFooter(timestamp: timestamp),
       ],
     );
   }
@@ -145,7 +163,12 @@ class _ForegroundTitle extends StatelessWidget {
 }
 
 class _ForegroundWeightInfo extends StatelessWidget {
-  const _ForegroundWeightInfo({Key? key}) : super(key: key);
+  final String weight;
+
+  const _ForegroundWeightInfo({
+    required this.weight,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -159,38 +182,74 @@ class _ForegroundWeightInfo extends StatelessWidget {
           bottomRight: Radius.circular(45),
         ),
       ),
-      child: const Center(
-        child: Text(
-          '-0.2kg',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
-          ),
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              weight,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
+            ),
+            const Text(
+              'kg',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFeatures: [FontFeature.subscripts()],
+                fontSize: 18,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _ForegroundFooter extends StatelessWidget {
-  const _ForegroundFooter({Key? key}) : super(key: key);
+class _ForegroundFooter extends StatefulWidget {
+  final int timestamp;
+
+  const _ForegroundFooter({
+    required this.timestamp,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_ForegroundFooter> createState() => _ForegroundFooterState();
+}
+
+class _ForegroundFooterState extends State<_ForegroundFooter> {
+  late DateTime dateTime;
+  late String formattedDateTime;
+
+  @override
+  void initState() {
+    super.initState();
+    dateTime = DateTime.fromMillisecondsSinceEpoch(widget.timestamp * 1000);
+    final DateFormat formatter = DateFormat('dd LLL');
+    formattedDateTime = formatter.format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(12.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
+        children: [
           Text(
-            '21 lug',
-            style: TextStyle(
+            formattedDateTime,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
             ),
           ),
-          Text(
+          const Text(
             '757706',
             style: TextStyle(
               color: Colors.white,
@@ -215,15 +274,15 @@ class _Background extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShaderMask(
       shaderCallback: (Rect bounds) {
-        return const RadialGradient(
+        return RadialGradient(
           center: Alignment.topLeft,
           radius: 1.0,
-          colors: [Colors.grey, Colors.grey],
+          colors: [Colors.grey.shade600, Colors.grey.shade600],
           tileMode: TileMode.repeated,
         ).createShader(bounds);
       },
       child: Image.network(
-        imageUrl ?? '',
+        imageUrl ?? 'https://i.pinimg.com/736x/2d/d4/4b/2dd44b3684ea4750ace4660ebc956051.jpg',
         fit: BoxFit.cover,
       ),
     );

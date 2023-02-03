@@ -11,6 +11,7 @@ Apiary _$ApiaryFromJson(Map<String, dynamic> json) => Apiary(
       name: json['name'] as String,
       color: json['color'] as String,
       imageUrl: json['thumbnail_apiary_list_url'] as String?,
+      weights: ApiaryWeights.fromJson(json['weights'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ApiaryToJson(Apiary instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$ApiaryToJson(Apiary instance) => <String, dynamic>{
       'name': instance.name,
       'color': instance.color,
       'thumbnail_apiary_list_url': instance.imageUrl,
+      'weights': instance.weights,
     };

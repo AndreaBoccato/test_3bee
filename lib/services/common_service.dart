@@ -44,8 +44,6 @@ class CommonService {
       },
     );
 
-    log('Get apiaries response: ${response.data['results']}');
-
     final ApiariesResponse apiariesResponse = ApiariesResponse.fromJson(response.data);
     return apiariesResponse;
   }
