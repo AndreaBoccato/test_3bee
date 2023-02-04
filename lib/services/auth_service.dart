@@ -42,7 +42,7 @@ class AuthService {
 
   Future<void> refreshUserToken({required String refreshToken}) async {
     final response = await dio.post(
-      "/auth/jwt/refresh",
+      '/auth/jwt/refresh',
       data: {
         'refresh': refreshToken,
       },

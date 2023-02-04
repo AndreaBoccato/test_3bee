@@ -1,13 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:test_3bee/core/dio_utils.dart';
+import 'package:test_3bee/core/utils/dio_utils.dart';
 import 'package:test_3bee/models/responses/apiaries_response.dart';
 
 class ApiaryService {
   late Dio dio;
 
   ApiaryService() {
-    dio = Dio();
-    DioUtils.initApiClient(dio);
+    dio = DioUtils.initApiClient();
   }
 
   Future<ApiariesResponse> getApiaries({required int page}) async {

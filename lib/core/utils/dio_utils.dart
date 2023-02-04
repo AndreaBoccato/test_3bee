@@ -3,7 +3,8 @@ import 'package:test_3bee/core/constants.dart';
 import 'package:test_3bee/core/instance_locator.dart';
 
 class DioUtils {
-  static void initApiClient(Dio dio) {
+  static Dio initApiClient() {
+    final Dio dio = Dio();
     dio.interceptors.clear();
     dio.options.baseUrl = Constants.baseUrl;
     dio.interceptors.add(
@@ -45,5 +46,7 @@ class DioUtils {
         },
       ),
     );
+
+    return dio;
   }
 }

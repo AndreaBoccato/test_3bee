@@ -8,23 +8,12 @@ abstract class HomeEvent extends Equatable {
 }
 
 class RequestData extends HomeEvent {
-  final int page;
+  final bool showLoader;
 
   const RequestData({
-    this.page = 1,
+    this.showLoader = true,
   });
 
   @override
-  List<Object?> get props => [page];
-}
-
-class LoadingStatusChanged extends HomeEvent {
-  final bool isLoading;
-
-  const LoadingStatusChanged({
-    required this.isLoading,
-  });
-
-  @override
-  List<Object?> get props => [isLoading];
+  List<Object?> get props => [showLoader];
 }

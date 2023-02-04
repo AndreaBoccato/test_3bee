@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:test_3bee/blocs/home/home_bloc.dart';
+import 'package:test_3bee/core/enums/request_status.dart';
 import 'package:test_3bee/models/apiary.dart';
+import 'package:test_3bee/widgets/custom_snackbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,10 +16,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
     context.read<HomeBloc>().add(const RequestData());
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.offset == _scrollController.position.maxScrollExtent) {
+        context.read<HomeBloc>().add(const RequestData(showLoader: false));
+      }
+    });
   }
 
   @override
@@ -27,7 +36,13 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Home page'),
       ),
       body: SafeArea(
-        child: BlocBuilder<HomeBloc, HomeState>(
+        child: BlocConsumer<HomeBloc, HomeState>(
+          listenWhen: (prev, curr) => prev.requestStatus != curr.requestStatus,
+          listener: (context, state) {
+            if (state.requestStatus == RequestStatus.failure) {
+              context.showErrorSnackBar(message: 'Errore nel recupero dei dati');
+            }
+          },
           builder: (context, state) {
             if (state.isLoading) {
               return const Center(
@@ -36,11 +51,19 @@ class _HomePageState extends State<HomePage> {
             }
 
             final List<Apiary> apiaries = state.apiariesResponse?.results ?? [];
+
+            if (apiaries.isEmpty) {
+              return const Center(
+                child: Text('Nessun risultato trovato'),
+              );
+            }
+
             return Center(
               child: Container(
                 color: Colors.orange,
                 height: 300,
                 child: ListView.builder(
+                  controller: _scrollController,
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemCount: apiaries.length,
