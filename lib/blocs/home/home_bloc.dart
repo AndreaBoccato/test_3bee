@@ -21,7 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ));
 
     try {
-      final ApiariesResponse apiariesResponse = await commonService.getApiaries(page: event.page);
+      final ApiariesResponse apiariesResponse = await apiaryService.getApiaries(page: event.page);
 
       emit(state.copyWith(
         apiariesResponse: apiariesResponse,

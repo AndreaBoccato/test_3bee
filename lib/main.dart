@@ -9,7 +9,8 @@ import 'package:test_3bee/core/local_cache.dart';
 import 'package:test_3bee/screens/home_page.dart';
 import 'package:test_3bee/screens/login_page.dart';
 import 'package:test_3bee/screens/main_page.dart';
-import 'package:test_3bee/services/common_service.dart';
+import 'package:test_3bee/services/apiary_service.dart';
+import 'package:test_3bee/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,8 @@ void main() async {
   final SharedPreferences preferences = await SharedPreferences.getInstance();
   final LocalCache localCache = LocalCache(preferences: preferences);
 
-  GetIt.instance.registerSingleton<CommonService>(CommonService());
+  GetIt.instance.registerLazySingleton<AuthService>(() => AuthService());
+  GetIt.instance.registerLazySingleton<ApiaryService>(() => ApiaryService());
   GetIt.instance.registerSingleton<LocalCache>(localCache);
   runApp(const MyApp());
 }
